@@ -1,6 +1,7 @@
 package com.rana.prescription_generation_app.entity;
 
 import com.rana.prescription_generation_app.constants.SequenceConstants;
+import com.rana.prescription_generation_app.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,7 @@ public class Prescription implements Serializable {
     private Long id;
 
     @Column(name = "PUBLIC_ID", unique = true, nullable = false, updatable = false)
-    protected String publicId;
+    private String publicId;
 
     @Column(name = "PRESCRIPTION_DATE", nullable = false)
     private LocalDate prescriptionDate;
@@ -44,8 +45,9 @@ public class Prescription implements Serializable {
     @Column(name = "PATIENT_AGE", nullable = false)
     private Integer patientAge;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "PATIENT_GENDER", nullable = false)
-    private String patientGender;
+    private Gender patientGender;
 
     @Column(name = "DIAGNOSIS")
     private String diagnosis;
