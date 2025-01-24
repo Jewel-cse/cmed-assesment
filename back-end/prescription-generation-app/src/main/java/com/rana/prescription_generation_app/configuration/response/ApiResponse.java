@@ -6,33 +6,36 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL) // Exclude null fields from the response
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-    private String status;
-    private String message;
-    private T data;
-    private Instant timestamp;
+    private T body;
+    private Integer totalPages;
+    private Long totalElements;
+    private Integer currentPage;
+    private Integer pageSize;
 
-    public static <T> ApiResponse<T> success(String message, T data) {
+    private String message;
+
+    public static <T> ApiResponse<T> success(String message, T data,Integer totalPages,Long totalElements,Integer currentPage,Integer pageSize) {
         return ApiResponse.<T>builder()
-                .status("SUCCESS")
                 .message(message)
-                .data(data)
-                .timestamp(Instant.now())
+                .body(data)
+                .totalPages(totalPages)
+                .totalElements(totalElements)
+                .currentPage(currentPage)
+                .pageSize(pageSize)
                 .build();
     }
 
-    public static <T> ApiResponse<T> error(String message) {
+    public static <T> ApiResponse<T> error(String message,T data ) {
         return ApiResponse.<T>builder()
-                .status("ERROR")
                 .message(message)
-                .timestamp(Instant.now())
+                .body(data)
                 .build();
     }
 }
