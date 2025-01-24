@@ -4,11 +4,8 @@ import { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Business Portfolio",
-  description: `This is our initial business portfolio.
-    Our business includes software development using cutting-edge technology
-    like Blockchain, Artificial Intelligence, Nodejs, Spring Boot, React, Next.js.
-    We develop various software like DApps, e-commerce, and enterprise solutions.`,
+  title: "CMED Health",
+  description: `CMED Health is a platform that helps you manage your health records and prescriptions.`,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

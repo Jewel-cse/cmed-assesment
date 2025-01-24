@@ -4,8 +4,9 @@ import Footer from "../../components/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Home - Business Portfolio",
-  description: `This is our home page where we showcase our business portfolio.`,
+  icons:'/cmed-logo.png',
+  title: "CMED Health",
+  description: `CMED Health is a platform that helps you manage your health records and prescriptions.`,
 };
 
 export default function HomeLayout({ children }: { children: ReactNode }) {
