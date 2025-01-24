@@ -9,15 +9,15 @@ function createGenericApiSlice<RES, REQ, QUERY = string | void>(config: {
   baseQuery?: BaseQueryFn;
 }) {
 
+
   //make in type 
-  interface ALL_RES{
-    response:{
-      body:RES[],
-      length:number,
-      totalPage:number,
-      totalElements:number,
-      currentPage:number,
-    }
+  interface ALL_RES {
+    body: RES[],
+    currentPage: number,
+    pageSize: number,
+    totalPages: number,
+    totalElements: number,
+    message: string,
   }
 
   const {
@@ -30,13 +30,13 @@ function createGenericApiSlice<RES, REQ, QUERY = string | void>(config: {
   return createApi({
     reducerPath,
     baseQuery,
-    tagTypes: [tagType?tagType:''],
+    tagTypes: [tagType ? tagType : ''],
     endpoints: (builder) => ({
       getAll: builder.query<ALL_RES, QUERY>({
         query: (query) => (query ? `/${baseUrl}?${query}` : `/${baseUrl}`),
         providesTags: [tagType],
       }),
-      getById: builder.query<RES, number|string>({
+      getById: builder.query<RES, number | string>({
         query: (id) => `/${baseUrl}/${id}`,
         providesTags: [tagType],
       }),
@@ -48,7 +48,7 @@ function createGenericApiSlice<RES, REQ, QUERY = string | void>(config: {
         }),
         invalidatesTags: [tagType],
       }),
-      update: builder.mutation<RES, { id: number|string; body: REQ }>({
+      update: builder.mutation<RES, { id: number | string; body: REQ }>({
         query: ({ id, body }) => ({
           url: `/${baseUrl}/${id}`,
           method: 'PUT',
@@ -56,7 +56,7 @@ function createGenericApiSlice<RES, REQ, QUERY = string | void>(config: {
         }),
         invalidatesTags: [tagType],
       }),
-      delete: builder.mutation<void, number|string>({
+      delete: builder.mutation<void, number | string>({
         query: (id) => ({
           url: `/${baseUrl}/${id}`,
           method: 'DELETE',

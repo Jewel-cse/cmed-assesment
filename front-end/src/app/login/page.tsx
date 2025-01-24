@@ -17,7 +17,7 @@ export default function AuthPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async () => {
     console.log("submitting",formData);
   };
 
@@ -31,7 +31,7 @@ export default function AuthPage() {
             Sign In
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
+        <form>
           <h2 className="text-2xl font-semibold text-center mb-4">Welcome Back!</h2>
           <Input
             className="mb-4 shadow-lg rounded-lg"
@@ -53,6 +53,7 @@ export default function AuthPage() {
           />
           <Button
             type="submit"
+            onPress={handleSubmit}
             className="w-full mb-4 bg-primary"
             color="primary"
             size="lg"
