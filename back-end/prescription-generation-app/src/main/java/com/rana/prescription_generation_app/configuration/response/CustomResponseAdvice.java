@@ -46,7 +46,7 @@ public class CustomResponseAdvice implements ResponseBodyAdvice<Object> {
                     page.getContent(), // Actual data
                     page.getTotalPages(),
                     page.getTotalElements(),
-                    page.getNumber(),
+                    page.getNumber()+1,
                     page.getSize()
             );
         }
