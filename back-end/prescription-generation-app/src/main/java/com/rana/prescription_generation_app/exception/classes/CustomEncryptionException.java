@@ -11,7 +11,6 @@ import java.io.Serial;
 public class CustomEncryptionException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 499248994881528003L;
-
     public CustomEncryptionException(String message) {
         super(message);
     }

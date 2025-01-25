@@ -1,6 +1,7 @@
 package com.rana.prescription_generation_app.controller.v1;
 
 import com.rana.prescription_generation_app.dto.UserDto;
+import com.rana.prescription_generation_app.enums.TokenType;
 import com.rana.prescription_generation_app.repository.UserRepository;
 import com.rana.prescription_generation_app.service.security.CookieService;
 import com.rana.prescription_generation_app.service.security.EncryptionService;
@@ -10,6 +11,7 @@ import com.rana.prescription_generation_app.utils.SecurityUtils;
 import com.rana.prescription_generation_app.utils.UserDetailsBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
 
 import static com.rana.prescription_generation_app.constants.API_V1.USER_URL;
 
@@ -38,8 +42,6 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserDto userDto) {
-
-        //check user exists
         if (!userRepository.existsByUsername(userDto.getUsername())) {
             throw new UsernameNotFoundException("User not found with user name: " + userDto.getUsername());
         }
@@ -50,10 +52,10 @@ public class AuthController {
         String newAccessToken = jwtService.generateJwtToken(userDto.getUsername());
         String encryptedAccessToken = encryptionService.encrypt(newAccessToken);
 
-//        var responseHeaders = new HttpHeaders();
-//        cookieService.addCookieToHeaders(responseHeaders, TokenType.ACCESS, encryptedAccessToken, Duration.ofDays(5));
+        var responseHeaders = new HttpHeaders();
+        cookieService.addCookieToHeaders(responseHeaders, TokenType.ACCESS, encryptedAccessToken, Duration.ofDays(1));
         return ResponseEntity.ok()
-//                .headers(responseHeaders)
+                .headers(responseHeaders)
                 .body(JwtResponseBuilder.buildJwtResponse(encryptedAccessToken, userDetailsBuilder));
 
     }
