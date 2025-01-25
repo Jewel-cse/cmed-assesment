@@ -36,7 +36,7 @@ public class UserController {
      * @param userDto the DTO containing data for the new user.
      * @return the ResponseEntity with status 201 (Created) and with body the new userDto.
      */
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto createdUser = userService.createUser(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);

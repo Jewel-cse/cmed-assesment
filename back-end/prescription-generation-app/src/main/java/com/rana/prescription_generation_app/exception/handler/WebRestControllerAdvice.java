@@ -142,7 +142,7 @@ public class WebRestControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        logger.error("Unexpected exception: ", ex);
+        logger.error("Unexpected exception: ", ex.getMessage());
         ErrorResponse error = new ErrorResponse("An unexpected error occurred. Please try again later.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

@@ -130,3 +130,18 @@ Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 50 more
+2025-01-25 15:53:10.500986+06:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM USERS \000d\000a\000d\000atruncate [*]users"; SQL statement:
+SELECT * FROM USERS 
+
+truncate users [42000-232]
+2025-01-25 15:53:18.881435+06:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM USERS \000d\000a\000d\000atruncate [*]table users"; SQL statement:
+SELECT * FROM USERS 
+
+truncate table users [42000-232]
+2025-01-25 15:53:32.581919+06:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM USERS \000d\000a\000d\000atruncate [*]table users"; SQL statement:
+SELECT * FROM USERS 
+
+truncate table users [42000-232]

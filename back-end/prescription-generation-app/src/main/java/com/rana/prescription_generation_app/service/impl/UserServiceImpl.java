@@ -7,6 +7,7 @@ import com.rana.prescription_generation_app.mapper.UserMapper;
 import com.rana.prescription_generation_app.repository.UserRepository;
 import com.rana.prescription_generation_app.service.UserService;
 import jakarta.validation.ValidationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
@@ -15,8 +16,11 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    UserServiceImpl(UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -30,7 +34,11 @@ public class UserServiceImpl implements UserService {
         if(!isValidEmail(userDto.getEmail())) {
             throw new ValidationException("Invalid email format");
         }
-        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User user = UserMapper.INSTANCE.toUser(userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+        User savedUser = userRepository.save(user);
+        savedUser.setPassword(null);
         return UserMapper.INSTANCE.toUserDto(user);
     }
 
