@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function HomeLayout({ children }: { children: ReactNode }) {
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
       <Header />
       <main className="flex-1 mt-12">{children}</main>
       <Footer />

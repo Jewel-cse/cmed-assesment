@@ -2,12 +2,18 @@
 
 import React, { useState } from "react";
 import { Input, Button } from "@nextui-org/react";
+import { useLoginMutation } from "../../store/ApiSlices/authApiSlice";
+import { LoaderIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+
+  const [login,{isLoading:isLogin,isSuccess,isError}] = useLoginMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -19,6 +25,17 @@ export default function AuthPage() {
 
   const handleSubmit = async () => {
     console.log("submitting",formData);
+    try{
+      const res = await login(formData).unwrap();
+      console.log('res',res);
+      //local storage e token save korte hobe
+      sessionStorage.setItem('_u_inf',JSON.stringify(res.body));
+      //redirect to pescriptions page
+      router.push('/prescriptions')
+
+    }catch(error){
+      alert('some thing went wrong');
+    }
   };
 
   return (
@@ -52,12 +69,14 @@ export default function AuthPage() {
             fullWidth
           />
           <Button
-            type="submit"
+            type="button"
             onPress={handleSubmit}
             className="w-full mb-4 bg-primary"
             color="primary"
             size="lg"
+            disabled={formData.password=='' || formData.username==''}
           >
+            {isLogin && <LoaderIcon className="ml-2 w-4 h-4"/>}
             Sign In
           </Button>
         </form>

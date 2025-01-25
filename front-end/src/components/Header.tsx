@@ -48,6 +48,9 @@ export default function Header() {
             </Tabs>
           </div>
           <div className="space-x-4 flex">
+            <div>
+              <Link href={"/login"} >login</Link>
+            </div>
             <ThemeSwitcher />
           </div>
         </nav>

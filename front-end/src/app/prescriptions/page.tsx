@@ -14,8 +14,9 @@ import {
   PaginationPrevious,
 } from "../../components/ui/pagination";
 import { PrescriptionDto } from "../../type/prescription";
-import PrescriptionForm from "./prescriptionsForm";
-import { Modal } from "@nextui-org/react";
+import { Button, Modal } from "@nextui-org/react";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 
 const columns = [
   // { accessorKey: "publicId", header: "Public ID", sortable: false },
@@ -31,6 +32,7 @@ const columns = [
 
 export default function PrescriptionPage() {
 
+  const router = useRouter();
   const [id, setId] = useState<string | undefined>();
 
   const [page, setPage] = useState<number>(0);
@@ -46,8 +48,10 @@ export default function PrescriptionPage() {
   const [deletePrescription] = useDeletePrescriptionMutation();
 
   const handleEdit = (data: PrescriptionDto) => {
-    setSelectedPrescription(data);
-    setEditModalOpen(true);
+    // localstorage e save korbo,
+    localStorage.setItem('editData', JSON.stringify(data));
+    // go to next page  /edit
+    router.push('/prescriptions/m?mode=edit');
   };
 
   const handleUpdate = async (updatedData: PrescriptionDto) => {
@@ -89,6 +93,12 @@ export default function PrescriptionPage() {
 
   return (
     <div className="container mx-auto overflow-x-hidden">
+      <div className="flex item-center justify-end my-2">
+        <Button className="bg-primary text-semibold " variant="solid" onClick={() => router.push('/prescriptions/m?mode=create')}>
+          <PlusCircledIcon className="ml-2 w-4 h-4" />
+          Add New Prescription
+        </Button>
+      </div>
       <DataTable
         columns={columns}
         data={prescriptionDataList?.body ?? []}
@@ -139,23 +149,6 @@ export default function PrescriptionPage() {
           </PaginationContent>
         </Pagination>
       </div>
-
-      {/* Edit Form section  */}
-    
-      <Modal
-        isOpen={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        aria-labelledby="edit-modal"
-        aria-describedby="edit-modal-description"
-      >
-        <PrescriptionForm
-          mode="EDIT"
-          initialData={selectedPrescription}
-          onSubmit={handleUpdate}
-          onClose={() => setEditModalOpen(false)}
-        />
-      </Modal>
-
     </div>
   );
 }

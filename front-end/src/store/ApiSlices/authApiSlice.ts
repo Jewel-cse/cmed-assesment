@@ -13,7 +13,7 @@ const authApiSlice = createApi({
     endpoints: (builder) => ({
         login: builder.mutation<any, signInpayload>({
             query: (body) => ({
-                url: `${baseUrl}/user/login`,
+                url: `${baseUrl}/users/login`,
                 method: 'POST',
                 body,
             }),
