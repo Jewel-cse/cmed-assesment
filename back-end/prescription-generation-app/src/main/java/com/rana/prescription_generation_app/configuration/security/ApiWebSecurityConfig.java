@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 
 /**
@@ -44,7 +47,7 @@ public class ApiWebSecurityConfig {
      * @throws Exception thrown when error happens during authentication.
      */
     @Bean
-    @Order
+    @Order(1)
     public SecurityFilterChain apiFilterChain(HttpSecurity http,CorsFilter corsFilter) throws Exception {
         http.securityMatcher(SecurityConstants.API_ROOT_URL_MAPPING);
         http.exceptionHandling((exceptionHandling) -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
@@ -53,8 +56,9 @@ public class ApiWebSecurityConfig {
                     requests.requestMatchers(new AntPathRequestMatcher(API_V1.USERS_SIGNUP_URL)).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher(API_V1.USERS_LOGIN_URL)).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher("/api/v1/doc-view/**", HttpMethod.GET.name())).permitAll();
-                    requests.anyRequest().permitAll();
+                    requests.anyRequest().authenticated();
                 })
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationManager(authenticationManager)
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);
