@@ -2,6 +2,8 @@ import { ThemeProvider } from "next-themes";
 import StoreProvider from "../store/storeProvider";
 import { Metadata } from "next";
 import "./globals.css";
+import { NotificationProvider } from "../store/errorNotifyProvider";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "CMED Health",
@@ -14,10 +16,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider attribute="class" defaultTheme="light">
           <StoreProvider>
-            <div>{children}</div>
+            <NotificationProvider>
+              <Toaster
+                position="top-center"
+                reverseOrder={false}
+              />
+              {children}</NotificationProvider>
           </StoreProvider>
         </ThemeProvider>
       </body>
-    </html>
+    </html> 
   );
 }

@@ -1,10 +1,22 @@
 'use client'
 
+import PrescriptionPage from "./prescriptions/page";
+
 
 export default function AppPage() {
+
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    window.location.href = "/login";
+    return null;
+  }
+  
   return (
     <div className="container mx-auto flex item-center justify-center bg-red-200 p-2">
-      <h1 className="text-3xl font-semibold">This is the Root app page</h1>
+      <PrescriptionPage/>
     </div>
   );
 }

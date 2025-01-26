@@ -16,22 +16,18 @@ export interface PrescriptionDto {
 
   patientAge?: number;
 
-  patientGender?: Gender;
+  patientGender?: string;
 
   diagnosis?: string;
 
   medicines?: string;
 
-  nextVisitDate?: string; // ISO string representation of LocalDate (e.g., "2025-01-24")
+  nextVisitDate?: string; 
 }
 
-/**
- * Enum for Gender.
- *
- * Represents the possible gender values for a patient.
- */
-export enum Gender {
-  "MALE",
-  "FEMALE",
-  "OTHER",
-}
+export const Gender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+  OTHER: 'OTHER',
+};
+

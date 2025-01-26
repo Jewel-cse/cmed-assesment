@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDeletePrescriptionMutation, useGetAllPrescriptionsQuery, useGetPrescriptionQuery, useUpdatePrescriptionMutation } from "../../store/ApiSlices/prescriptionsApiSlice";
 import React from "react";
 import { DataTable } from "../../components/table/dataTable";
@@ -16,7 +16,10 @@ import {
 import { PrescriptionDto } from "../../type/prescription";
 import { Button, Modal } from "@nextui-org/react";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
+import { useErrorNotification } from "../../store/errorNotifyProvider";
+import ConfirmPopUp from "../../components/confirmPopUp";
+import toast from "react-hot-toast";
 
 const columns = [
   // { accessorKey: "publicId", header: "Public ID", sortable: false },
@@ -29,7 +32,6 @@ const columns = [
   { accessorKey: "nextVisitDate", header: "Next Visit Date", sortable: true },
 ];
 
-
 export default function PrescriptionPage() {
 
   const router = useRouter();
@@ -38,33 +40,59 @@ export default function PrescriptionPage() {
   const [page, setPage] = useState<number>(0);
   const [size, setSize] = useState<number>(5);
 
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedPrescription, setSelectedPrescription] = useState<PrescriptionDto | undefined>();
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
 
 
   const { data: prescriptionDataList, isLoading } = useGetAllPrescriptionsQuery(`page=${page}&size=${size}`);
-  const { data: prescription, isLoading: isLoadingPrescription } = useGetPrescriptionQuery(id ?? '', { skip: !id });
-  const [updatePrescription] = useUpdatePrescriptionMutation();
   const [deletePrescription] = useDeletePrescriptionMutation();
 
+  const {notify} = useErrorNotification()
+
   const handleEdit = (data: PrescriptionDto) => {
-    // localstorage e save korbo,
     localStorage.setItem('editData', JSON.stringify(data));
-    // go to next page  /edit
     router.push('/prescriptions/m?mode=edit');
   };
 
-  const handleUpdate = async (updatedData: PrescriptionDto) => {
-    try {
-      await updatePrescription({ id: updatedData.publicId!, body: updatedData }).unwrap();
-      setEditModalOpen(false);
-      setSelectedPrescription(undefined);
-    } catch (error) {
-      console.error('Failed to update prescription:', error);
-    }
+  const handleDelete = async(data:PrescriptionDto)=>{
+    handleConfirmAction(
+      async () => {
+        try {
+          if(data.publicId === undefined){
+            notify({
+              description: 'Public ID is missing'
+            });
+            return
+          } 
+          await deletePrescription(data.publicId!).unwrap();
+          toast.success('Prescription deleted.');
+        } catch (error: any) {
+          notify({
+            description: error?.data.message
+          })
+        }
+      },
+      `Confirm Delete`,
+      `Are you sure to delete this prescription?`,
+    );
+  }
+
+  
+
+  
+  
+  const handleConfirmAction = (
+    action: () => void,
+    title: string,
+    text: string,
+  ) => {
+    setConfirmAction(() => action);
+    setConfirmText(text);
+    setConfirmModalOpen(true);
   };
 
-  if (isLoading || isLoadingPrescription) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -93,7 +121,7 @@ export default function PrescriptionPage() {
 
   return (
     <div className="container mx-auto overflow-x-hidden">
-      <div className="flex item-center justify-end my-2">
+      <div className="flex item-center justify-end my-4">
         <Button className="bg-primary text-semibold " variant="solid" onClick={() => router.push('/prescriptions/m?mode=create')}>
           <PlusCircledIcon className="ml-2 w-4 h-4" />
           Add New Prescription
@@ -105,7 +133,7 @@ export default function PrescriptionPage() {
         height={"auto"}
         actions={[{ edit: true, delete: true }]}
         onEdit={handleEdit}
-        onDelete={() => alert('delete')}
+        onDelete={handleDelete}
       />
       {/* The pagination section */}
       <div className="flex item-center justify-center mt-4">
@@ -149,6 +177,18 @@ export default function PrescriptionPage() {
           </PaginationContent>
         </Pagination>
       </div>
+
+      {/* confirm popup show when delete */}
+      <ConfirmPopUp
+        confirmAction={() => {
+          confirmAction();
+          setConfirmModalOpen(false);
+        }}
+        confirmModalOpen={confirmModalOpen}
+        setConfirmModalOpen={setConfirmModalOpen}
+        confirmText={'OK'}
+        innerText={confirmText}
+      />
     </div>
   );
 }
