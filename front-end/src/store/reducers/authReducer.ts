@@ -15,14 +15,14 @@ const authReducer = createSlice({
     setToken(state, action: PayloadAction<string | null>) {
       state.token = action.payload;
       if (action.payload) {
-        localStorage.setItem("token", action.payload);
+        sessionStorage.setItem("token", action.payload);
       } else {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
       }
     },
     removeToken(state) {
       state.token = null;
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
     }
   }
 });

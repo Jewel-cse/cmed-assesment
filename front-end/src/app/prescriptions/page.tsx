@@ -13,16 +13,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../../components/ui/pagination";
-import { PrescriptionDto } from "../../type/prescription";
-import { Button, Modal } from "@nextui-org/react";
+import { intialSearch, PrescriptionDto, SearchPrescription } from "../../type/prescription";
+import { Button, Input, Modal } from "@nextui-org/react";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from 'next/navigation';
 import { useErrorNotification } from "../../store/errorNotifyProvider";
 import ConfirmPopUp from "../../components/confirmPopUp";
 import toast from "react-hot-toast";
+import { prepareQueryString } from "../../lib/utils";
 
 const columns = [
-  // { accessorKey: "publicId", header: "Public ID", sortable: false },
   { accessorKey: "prescriptionDate", header: "Prescription Date", sortable: true },
   { accessorKey: "patientName", header: "Patient Name", sortable: true },
   { accessorKey: "patientAge", header: "Patient Age", sortable: true },
@@ -33,38 +33,39 @@ const columns = [
 ];
 
 export default function PrescriptionPage() {
-
   const router = useRouter();
   const [id, setId] = useState<string | undefined>();
 
   const [page, setPage] = useState<number>(0);
-  const [size, setSize] = useState<number>(5);
+  const [size, setSize] = useState<number>(10);
 
-  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+  const [confirmAction, setConfirmAction] = useState<() => void>(() => { });
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
 
+  const [searchForm, setSearchForm] = useState<SearchPrescription>(intialSearch)
+  const [queryParams, setQueryParams] = useState<string>('')
 
-  const { data: prescriptionDataList, isLoading } = useGetAllPrescriptionsQuery(`page=${page}&size=${size}`);
+  const { data: prescriptionDataList, isLoading } = useGetAllPrescriptionsQuery(`page=${page}&size=${size}${queryParams}`);
   const [deletePrescription] = useDeletePrescriptionMutation();
 
-  const {notify} = useErrorNotification()
+  const { notify } = useErrorNotification()
 
   const handleEdit = (data: PrescriptionDto) => {
     localStorage.setItem('editData', JSON.stringify(data));
     router.push('/prescriptions/m?mode=edit');
   };
 
-  const handleDelete = async(data:PrescriptionDto)=>{
+  const handleDelete = async (data: PrescriptionDto) => {
     handleConfirmAction(
       async () => {
         try {
-          if(data.publicId === undefined){
+          if (data.publicId === undefined) {
             notify({
               description: 'Public ID is missing'
             });
             return
-          } 
+          }
           await deletePrescription(data.publicId!).unwrap();
           toast.success('Prescription deleted.');
         } catch (error: any) {
@@ -78,10 +79,6 @@ export default function PrescriptionPage() {
     );
   }
 
-  
-
-  
-  
   const handleConfirmAction = (
     action: () => void,
     title: string,
@@ -96,9 +93,6 @@ export default function PrescriptionPage() {
     return <div>Loading...</div>;
   }
 
-  if (prescriptionDataList) {
-    console.log(prescriptionDataList);
-  }
 
   const getMiddlePages = () => {
     const totalPages = prescriptionDataList?.totalPages ?? 0;
@@ -116,36 +110,92 @@ export default function PrescriptionPage() {
     return [currentPage - 1, currentPage, currentPage + 1];
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setSearchForm((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const currentPage = prescriptionDataList?.currentPage ?? 0;
   const totalPages = prescriptionDataList?.totalPages ?? 0;
 
+  async function handleSearch() {
+    setQueryParams(prepareQueryString(searchForm))
+  }
+
   return (
-    <div className="container mx-auto overflow-x-hidden">
-      <div className="flex item-center justify-end my-4">
-        <Button className="bg-primary text-semibold " variant="solid" onClick={() => router.push('/prescriptions/m?mode=create')}>
+    <div className="container mx-auto px-4 overflow-x-hidden">
+      {/* Search Section */}
+      <div className="flex flex-wrap items-center justify-between bg-slate-100 dark:bg-gray-800 rounded-sm gap-4 p-4 mt-4">
+        <Input
+          label="From Date"
+          className="shadow-lg rounded-lg w-full sm:w-auto"
+          name="prescriptionFromDate"
+          type="date"
+          minLength={8}
+          value={searchForm?.prescriptionFromDate??''}
+          onChange={handleChange}
+        />
+        <Input
+          label="To Date"
+          className="shadow-lg rounded-lg w-full sm:w-auto"
+          name="prescriptionToDate"
+          type="date"
+          minLength={8}
+          value={searchForm?.prescriptionToDate??''}
+          onChange={handleChange}
+        />
+        <Button
+          className="bg-primary shadow-lg rounded-lg w-full sm:w-auto"
+          variant="ghost"
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
+      </div>
+
+      <div className="flex items-center justify-end mt-4 my-2">
+        <Button
+          className="bg-primary text-semibold"
+          variant="solid"
+          onClick={() => router.push('/prescriptions/m?mode=create')}
+        >
           <PlusCircledIcon className="ml-2 w-4 h-4" />
           Add New Prescription
         </Button>
       </div>
-      <DataTable
-        columns={columns}
-        data={prescriptionDataList?.body ?? []}
-        height={"auto"}
-        actions={[{ edit: true, delete: true }]}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-      {/* The pagination section */}
-      <div className="flex item-center justify-center mt-4">
-        <Pagination className="flex item-center" aria-label="Prescription Pagination">
-          <PaginationContent className="flex gap-8 item-center ">
+
+      {/* Data Table */}
+      <div className="overflow-x-auto">
+        <DataTable
+          columns={columns}
+          data={prescriptionDataList?.body ?? []}
+          height={"auto"}
+          actions={[{ edit: true, delete: true }]}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </div>
+
+      {/* Pagination Section */}
+      <div className="flex flex-wrap flex-col sm:flex-row items-center justify-center mt-4">
+        <Pagination
+          className="flex flex-wrap items-center gap-4"
+          aria-label="Prescription Pagination"
+        >
+          <PaginationContent className="flex items-center gap-4">
             <PaginationItem>
               <PaginationPrevious
-                className="flex flex-row item-center"
+                className="flex flex-row items-center"
                 href="#"
                 size={"md"}
-                style={{ pointerEvents: currentPage === 1 ? 'none' : 'auto', opacity: currentPage === 1 ? 0.5 : 1 }}
-                onClick={() => setPage((prev) => (Math.max(Number(prev) - 1, 0)))}
+                style={{
+                  pointerEvents: currentPage === 1 ? 'none' : 'auto',
+                  opacity: currentPage === 1 ? 0.5 : 1,
+                }}
+                onClick={() => setPage((prev) => Math.max(Number(prev) - 1, 0))}
               />
             </PaginationItem>
             {getMiddlePages().map((page) => (
@@ -154,7 +204,9 @@ export default function PrescriptionPage() {
                   href="#"
                   size={"md"}
                   onClick={() => setPage(page - 1)}
-                  className={currentPage === page ? "font-bold text-blue-500" : ""}
+                  className={
+                    currentPage === page ? "font-bold text-blue-500" : ""
+                  }
                 >
                   {page}
                 </PaginationLink>
@@ -167,10 +219,13 @@ export default function PrescriptionPage() {
             )}
             <PaginationItem>
               <PaginationNext
-                className="flex flex-row item-center"
+                className="flex flex-row items-center"
                 href="#"
                 size={"md"}
-                style={{ pointerEvents: currentPage === totalPages ? 'none' : 'auto', opacity: currentPage === totalPages ? 0.5 : 1 }}
+                style={{
+                  pointerEvents: currentPage === totalPages ? 'none' : 'auto',
+                  opacity: currentPage === totalPages ? 0.5 : 1,
+                }}
                 onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
               />
             </PaginationItem>
@@ -178,7 +233,7 @@ export default function PrescriptionPage() {
         </Pagination>
       </div>
 
-      {/* confirm popup show when delete */}
+      {/* Confirm Pop-up */}
       <ConfirmPopUp
         confirmAction={() => {
           confirmAction();

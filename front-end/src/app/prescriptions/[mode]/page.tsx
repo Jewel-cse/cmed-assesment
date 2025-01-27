@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Input, Textarea, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Spacer, SharedSelection } from "@nextui-org/react";
-import { Gender, PrescriptionDto } from "../../../type/prescription";
+import { Gender, PrescriptionDto, SearchPrescription } from "../../../type/prescription";
 import { capitalize } from "../../../components/table/utils";
 import { useSearchParams } from "next/navigation";
 import NotFound from 'next/error';
@@ -23,8 +23,9 @@ const initialPrescriptionData: PrescriptionDto = {
   nextVisitDate: '',
 };
 
+
 export default function PrescriptionInnerPage() {
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState<PrescriptionDto>(initialPrescriptionData);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({
@@ -63,7 +64,6 @@ export default function PrescriptionInnerPage() {
       if (mode === 'edit') {
         const editDataSaved = localStorage.getItem('editData');
         const editData = JSON.parse(editDataSaved??'');
-        console.log('edit data from local storage :: ', editData);
         const { publicId,prescriptionDate, patientName, patientAge, patientGender, diagnosis, medicines, nextVisitDate } = editData;
         setFormData({
           publicId,
@@ -92,11 +92,9 @@ export default function PrescriptionInnerPage() {
       else if (mode === 'edit') {
         await update({ id: formData.publicId!, body: formData }).unwrap();
         toast.success("Prescription updated")
-        
       }
       
     } catch (error:any) {
-      console.log('Backend error :: ', error);
       notify({
         description:error.data.message
       })

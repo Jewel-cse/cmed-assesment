@@ -5,9 +5,12 @@ import { Input, Button } from "@nextui-org/react";
 import { useLoginMutation } from "../../store/ApiSlices/authApiSlice";
 import { LoaderIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { setToken } from "../../store/reducers/authReducer";
+import { useDispatch } from "react-redux";
 
 export default function AuthPage() {
   const router = useRouter()
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -24,12 +27,13 @@ export default function AuthPage() {
   };
 
   const handleSubmit = async () => {
-    console.log("submitting",formData);
     try{
       const res = await login(formData).unwrap();
       console.log('res',res);
       //local storage e token save korte hobe
       sessionStorage.setItem('_u_inf',JSON.stringify(res.body));
+      dispatch(setToken(res.body.accessToken))
+      
       //redirect to pescriptions page
       router.push('/prescriptions')
 

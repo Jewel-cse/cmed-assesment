@@ -25,6 +25,17 @@ export interface PrescriptionDto {
   nextVisitDate?: string; 
 }
 
+export interface SearchPrescription {
+  prescriptionFromDate:string | null;
+  prescriptionToDate:string | null;
+}
+
+export const intialSearch: SearchPrescription = {
+  prescriptionFromDate:null,
+  prescriptionToDate:null
+};
+
+
 export const Gender = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',

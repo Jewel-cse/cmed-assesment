@@ -8,7 +8,7 @@ export default function AppPage() {
   if (typeof window === "undefined") {
     return null;
   }
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = sessionStorage.getItem("accessToken");
   if (!accessToken) {
     window.location.href = "/login";
     return null;

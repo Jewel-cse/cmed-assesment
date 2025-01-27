@@ -163,14 +163,14 @@ export function DataTable({
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between py-4">
+      {/* <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter data..."
           className="mr-2  max-w-sm rounded-md shadow-sm focus:border-blue-400 focus:outline-none"
           value={globalFilter ?? ''}
           onChange={(e) => table.setGlobalFilter(e.target.value)}
         />
-      </div>
+      </div> */}
       <div className="rounded-md border">
         <Table>
           <ScrollArea style={{ minHeight: 200, height }}>

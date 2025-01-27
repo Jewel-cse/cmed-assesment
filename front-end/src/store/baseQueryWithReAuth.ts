@@ -1,17 +1,17 @@
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { RootState } from './store';
 
-export const baseUrl = 'http://localhost:8080/api/v1';
+export const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
 
 const baseQuery = fetchBaseQuery({
   baseUrl,
   prepareHeaders: (headers, { getState }) => {
-    const u_inf = sessionStorage.getItem("_u_inf");
-    if(u_inf){
-      const {accessToken} = JSON.parse(u_inf);
-      console.log('access token ::::  ',accessToken)
-      if (accessToken) {
-        headers.set('Authorization', `Bearer ${accessToken}`);
-      }
+    const accessTokenFromRedux = (getState() as RootState).auth.token;
+    const u_inf = sessionStorage.getItem('_u_inf');
+
+    const accessToken = u_inf ? JSON.parse(u_inf).accessToken : accessTokenFromRedux;
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
     }
     return headers;
   },
