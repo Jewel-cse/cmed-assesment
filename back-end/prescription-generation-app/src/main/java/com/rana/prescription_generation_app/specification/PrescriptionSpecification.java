@@ -95,6 +95,32 @@ public class PrescriptionSpecification {
     }
 
     /**
+     * Creates a Specification for filtering by a prescription date range.
+     * If both dates are null, defaults to the current month's start and end dates.
+     *
+     * @param prescriptionFromDate the start date of the range (inclusive).
+     * @param prescriptionToDate   the end date of the range (inclusive).
+     * @return a Specification for filtering by a prescription date range.
+     */
+    public static Specification<Prescription> hasPrescriptionDateBetween(LocalDate prescriptionFromDate, LocalDate prescriptionToDate) {
+        return (root, query, builder) -> {
+            if (prescriptionFromDate == null && prescriptionToDate == null) {
+                LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+                LocalDate endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+                return builder.between(root.get("prescriptionDate"), startOfMonth, endOfMonth);
+            }
+            if (prescriptionFromDate != null && prescriptionToDate != null) {
+                return builder.between(root.get("prescriptionDate"), prescriptionFromDate, prescriptionToDate);
+            }
+            if (prescriptionFromDate != null) {
+                return builder.greaterThanOrEqualTo(root.get("prescriptionDate"), prescriptionFromDate);
+            }
+            return builder.lessThanOrEqualTo(root.get("prescriptionDate"), prescriptionToDate);
+        };
+    }
+
+
+    /**
      * Combines multiple Specifications using logical AND.
      *
      * @param specs the array of Specifications to combine.

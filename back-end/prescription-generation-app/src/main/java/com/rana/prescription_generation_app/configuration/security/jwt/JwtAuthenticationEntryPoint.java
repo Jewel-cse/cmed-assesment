@@ -1,5 +1,6 @@
 package com.rana.prescription_generation_app.configuration.security.jwt;
 
+import com.rana.prescription_generation_app.exception.classes.CustomUnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,7 +30,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             throws IOException {
 
         log.error("Unauthorized error: {}", authException.getMessage());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getLocalizedMessage());
+        throw new CustomUnauthorizedException("Unauthorized access, please login.");
+        //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getLocalizedMessage());
     }
 }
 

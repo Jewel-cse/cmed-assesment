@@ -1,8 +1,6 @@
 package com.rana.prescription_generation_app.exception.handler;
 
-import com.rana.prescription_generation_app.exception.classes.CustomAlreadyExistsException;
-import com.rana.prescription_generation_app.exception.classes.CustomNotFoundException;
-import com.rana.prescription_generation_app.exception.classes.CustomValidationException;
+import com.rana.prescription_generation_app.exception.classes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -68,6 +66,32 @@ public class WebRestControllerAdvice {
         logger.warn("CustomValidationException: {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    /**
+     * Handle custom Unauthorized exceptions.
+     *
+     * @param ex the CustomUnauthorizedException.
+     * @return a ResponseEntity with error details.
+     */
+    @ExceptionHandler(CustomUnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleCustomUnauthorizedException(CustomUnauthorizedException ex) {
+        logger.warn("CustomUnauthorizedException: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
+     * Handle custom Encryption exceptions.
+     *
+     * @param ex the CustomEncryptionException.
+     * @return a ResponseEntity with error details.
+     */
+    @ExceptionHandler(CustomEncryptionException.class)
+    public ResponseEntity<ErrorResponse> handleCustomEncryptionException(CustomEncryptionException ex) {
+        logger.error("CustomEncryptionException: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     /**

@@ -99,7 +99,8 @@ public class PrescriptionController {
                 PrescriptionSpecification.prescribedOn(prescriptionDate),
                 PrescriptionSpecification.hasAgeRange(minAge, maxAge),
                 PrescriptionSpecification.hasDiagnosis(diagnosis),
-                PrescriptionSpecification.hasNextVisitDate(nextVisitDate)
+                PrescriptionSpecification.hasNextVisitDate(nextVisitDate),
+                PrescriptionSpecification.hasPrescriptionDateBetween(prescriptionFromDate, prescriptionToDate)
         );
 
         Page<PrescriptionDto> prescriptions = prescriptionService.getAllPrescriptions(specification, pageable);
@@ -140,14 +141,6 @@ public class PrescriptionController {
     public ResponseEntity<Void> deletePrescription(@PathVariable @NonNull String publicId) {
         prescriptionService.deletePrescription(publicId);
         return ResponseEntity.noContent().build();
-        /*try {
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }*/
     }
 }
 
