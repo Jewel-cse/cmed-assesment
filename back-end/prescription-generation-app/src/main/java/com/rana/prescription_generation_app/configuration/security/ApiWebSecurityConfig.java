@@ -56,7 +56,8 @@ public class ApiWebSecurityConfig {
                     requests.requestMatchers(new AntPathRequestMatcher(API_V1.USERS_SIGNUP_URL)).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher(API_V1.USERS_LOGIN_URL)).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher("/api/v1/doc-view/**", HttpMethod.GET.name())).permitAll();
-                    requests.anyRequest().authenticated();
+//                    requests.anyRequest().authenticated();
+                    requests.anyRequest().permitAll();
                 })
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

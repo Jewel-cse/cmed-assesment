@@ -166,6 +166,7 @@ public class WebRestControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        ex.printStackTrace();
         logger.error("Unexpected exception: ", ex.getMessage());
         ErrorResponse error = new ErrorResponse("An unexpected error occurred. Please try again later.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);

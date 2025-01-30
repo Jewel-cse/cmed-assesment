@@ -6,4 +6,6 @@ public interface API_V1 {
     String USER_URL= API_V1+"/users";
     String USERS_SIGNUP_URL= USER_URL+"/signup";
     String USERS_LOGIN_URL= USER_URL+"/login";
+
+    String REPORT_URL= API_V1+"/reports";
 }
