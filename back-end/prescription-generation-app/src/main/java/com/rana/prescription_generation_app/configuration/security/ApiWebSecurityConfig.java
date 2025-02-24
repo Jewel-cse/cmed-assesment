@@ -54,6 +54,7 @@ public class ApiWebSecurityConfig {
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(requests -> {
                     requests.requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**"), new AntPathRequestMatcher("/swagger-ui/**"), new AntPathRequestMatcher("/swagger-ui.html")).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher(API_V1.USERS_SIGNUP_URL)).permitAll();
+                    requests.requestMatchers(new AntPathRequestMatcher("/test")).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher(API_V1.USERS_LOGIN_URL)).permitAll();
                     requests.requestMatchers(new AntPathRequestMatcher("/api/v1/doc-view/**", HttpMethod.GET.name())).permitAll();
 //                    requests.anyRequest().authenticated();
